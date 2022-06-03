@@ -50,8 +50,8 @@ fn main() {
     bathroom.add_direction("West".to_string(), &kitchen).unwrap();
     garage.add_direction("North".to_string(), &bathroom).unwrap();
 
-    //println!("Is {} connected to {}?: {}",
-    //    garage.clone().name,
-    //    kitchen.clone().name,
-    //    Room::is_connected(garage, kitchen));
+    println!("Is {} connected to {}?: {}",
+        garage.clone().name,
+        kitchen.clone().name,
+        Room::is_connected(&garage, &kitchen));
 }
