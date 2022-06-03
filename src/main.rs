@@ -4,27 +4,26 @@ use std::error::Error;
 #[derive(Default, Clone, Debug, PartialEq)]
 struct Room<'a> {
     name: String,
-    rooms: HashMap<String, &'a Box<Room<'a>>>,
+    rooms: HashMap<String, &'a Room<'a>>,
 }
 
 impl<'a> Room<'a> {
-    fn new(name: String) -> Box<Room<'a>> {
-        let room = Room {
+    fn new(name: String) -> Room<'a> {
+        Room {
             name,
             ..Default::default()
-        };
-        Box::new(room)
+        }
     }
 
-    fn add_direction(&mut self, direction: String, room: &'a Box<Room>) -> Result<(), Box<dyn Error>> {
-        if *self == **room {
+    fn add_direction(&mut self, direction: String, room: &'a Room) -> Result<(), Box<dyn Error>> {
+        if *self == *room {
             return Err("It's myself!".into())
         }
         self.rooms.insert(direction, room);
         Ok(())
     }
 
-    fn is_connected_internal(room: &'a Box<Room<'a>>, end_room: &'a Box<Room>, visited: &mut Vec<&'a Box<Room<'a>>>) -> bool {
+    fn is_connected_internal(room: &'a Room<'a>, end_room: &'a Room, visited: &mut Vec<&'a Room<'a>>) -> bool {
         if room == end_room {
             return true
         }
@@ -37,7 +36,7 @@ impl<'a> Room<'a> {
         results.contains(&true)
     }
 
-    fn is_connected(room: &'a Box<Room>, end_room: &'a Box<Room>) -> bool {
+    fn is_connected(room: &'a Room, end_room: &'a Room) -> bool {
         Room::is_connected_internal(room, end_room, &mut Vec::new())
     }
 }
@@ -46,6 +45,8 @@ fn main() {
     let mut garage = Room::new("garage".to_owned());
     let mut bathroom = Room::new("bathroom".to_owned());
     let kitchen = Room::new("kitchen".to_owned());
+    let front_room = Room::new("Front Room".to_owned());
+    let dining_room = Room::new("Dining Room".to_owned());
 
     bathroom.add_direction("West".to_string(), &kitchen).unwrap();
     garage.add_direction("North".to_string(), &bathroom).unwrap();
@@ -54,4 +55,9 @@ fn main() {
         garage.clone().name,
         kitchen.clone().name,
         Room::is_connected(&garage, &kitchen));
+
+    println!("Is {} connected to {}?: {}",
+        front_room.clone().name,
+        dining_room.clone().name,
+        Room::is_connected(&front_room, &dining_room));
 }
